@@ -1,7 +1,6 @@
 import {
   ActionReducerMapBuilder,
   createAsyncThunk,
-  createReducer,
   createSlice,
 } from "@reduxjs/toolkit";
 import { DataStatus, UserState } from "../../types/redux";
@@ -35,7 +34,7 @@ const fetchLogin = createAsyncThunk(
   }
 );
 
-const fetchRegister = createAsyncThunk(
+export const fetchRegister = createAsyncThunk(
     "user/register",
     async (user: { username: string; password: string,isAdmin:boolean }, thunkApi) => {
       try {
@@ -77,3 +76,5 @@ const userSlice = createSlice({
     })
   },
 });
+
+export default userSlice
