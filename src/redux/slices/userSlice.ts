@@ -12,14 +12,14 @@ const initialState: UserState = {
   user: null,
 };
 
-const fetchLogin = createAsyncThunk(
+export const fetchLogin = createAsyncThunk(
   "user/login",
   async (user: { username: string; password: string }, thunkApi) => {
     try {
       const res = await fetch("http://localhost:2222/api/users/login", {
         method: "POST",
         headers: {
-          "Content-Type": "aplication/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(user),
       });
@@ -27,7 +27,7 @@ const fetchLogin = createAsyncThunk(
         thunkApi.rejectWithValue("Cant login ,please try again");
       }
       const data = await res.json();
-      thunkApi.fulfillWithValue(data);
+      return data 
     } catch (err) {
       thunkApi.rejectWithValue(`${err}`);
     }
