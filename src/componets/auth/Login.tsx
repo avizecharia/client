@@ -6,12 +6,17 @@ import { useNavigate } from "react-router";
 
 export default function login() {
   const dis = useAppDispatch();
-  const user = useAppSelector((state) => state.user.user);
+  const {user} = useAppSelector((state) => state.user);
   const navigate = useNavigate();
   useEffect(() => {
     if (!user?._id) return;
-    return navigate("/votes");
+    navigate("/votes");
   }, [user]);
+  useEffect(()=>{
+    if(!user?._id){
+      navigate('/votes')
+    }
+  },[])
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   return (
