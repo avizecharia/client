@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/store";
 import { fetchLogin, fetchRegister } from "../../redux/slices/userSlice";
 import { useNavigate } from "react-router";
 
-export default function login() {
+export default function Login() {
   const dis = useAppDispatch();
   const {user} = useAppSelector((state) => state.user);
   const navigate = useNavigate();
@@ -13,8 +13,8 @@ export default function login() {
     navigate("/votes");
   }, [user]);
   useEffect(()=>{
-    if(!user?._id){
-      navigate('/votes')
+    if(user?._id){
+      return navigate('/votes')
     }
   },[])
   const [username, setUsername] = useState("");
@@ -36,6 +36,7 @@ export default function login() {
       <button onClick={() => dis(fetchLogin({ username, password }))}>
         Login
       </button>
+
     </div>
   );
 }

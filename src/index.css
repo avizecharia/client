@@ -23,12 +23,14 @@ a:hover {
 }
 
 body {
+  width: 100vw;
   margin: 0;
   display: flex;
   place-items: center;
   flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
+
 }
 
 h1 {
@@ -81,4 +83,7 @@ button:focus-visible {
 .nav > a.active {
   color: skyblue;
   font-weight: bold;
+}
+.votes{
+
 }

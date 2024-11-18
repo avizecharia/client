@@ -12,6 +12,27 @@ const initialState: UserState = {
   user: null,
 };
 
+
+export const fetchGetUser = createAsyncThunk(
+  "user/getUser",
+  async(_,thunkApi)=>{
+    try {
+      const res = await fetch("http://localhost:2222/api/users/getuser",{
+        method:"GET",
+        headers:{"authorization":localStorage.token}
+      })
+      if (res.status != 200) {
+        thunkApi.rejectWithValue("Cant get user ,please try again");
+        return
+      }
+      const data = await res.json();
+      return data 
+    } catch (error) {
+      thunkApi.rejectWithValue(`cant get user err:${error}`)
+    }
+  }
+)
+
 export const fetchLogin = createAsyncThunk(
   "user/login",
   async (user: { username: string; password: string }, thunkApi) => {
@@ -25,8 +46,10 @@ export const fetchLogin = createAsyncThunk(
       });
       if (res.status != 200) {
         thunkApi.rejectWithValue("Cant login ,please try again");
+        return
       }
       const data = await res.json();
+      localStorage.setItem("token",data.token)
       return data 
     } catch (err) {
       thunkApi.rejectWithValue(`${err}`);
@@ -41,12 +64,13 @@ export const fetchRegister = createAsyncThunk(
         const res = await fetch("http://localhost:2222/api/users/register", {
           method: "POST",
           headers: {
-            "Content-Type": "aplication/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(user),
         });
         if (res.status != 200) {
           thunkApi.rejectWithValue("Cant create new user ,please try again");
+          return
         }
         const data = await res.json();
         thunkApi.fulfillWithValue(data);
@@ -56,10 +80,22 @@ export const fetchRegister = createAsyncThunk(
     }
   );
 
+
+
+
+
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    logout:(state) => {
+    state.error =  null,
+    state.status = DataStatus.IDLE
+    state.user =  null
+    }
+      
+    
+  },
   extraReducers: (builder: ActionReducerMapBuilder<UserState>) => {
     builder.addCase(fetchLogin.pending,(state,action)=> {
         state.status = DataStatus.LOADING
@@ -73,7 +109,31 @@ const userSlice = createSlice({
         state.status = DataStatus.FAILED
         state.error = action.error as string
         state.user = null
-    })
+    }).addCase(fetchRegister.pending,(state,action)=> {
+      state.status = DataStatus.LOADING
+      state.error = null
+      state.user = null
+  }).addCase(fetchRegister.fulfilled,(state,action)=> {
+      state.status = DataStatus.SUCCCESS
+      state.error = null
+      state.user = null
+  }).addCase(fetchRegister.rejected,(state,action)=> {
+      state.status = DataStatus.FAILED
+      state.error = action.error as string
+      state.user = null
+  }).addCase(fetchGetUser.pending,(state,action)=> {
+    state.status = DataStatus.LOADING
+    state.error = null
+    state.user = null
+}).addCase(fetchGetUser.fulfilled,(state,action)=> {
+    state.status = DataStatus.SUCCCESS
+    state.error = null
+    state.user = {...state.user, ...action.payload};
+}).addCase(fetchGetUser.rejected,(state,action)=> {
+    state.status = DataStatus.FAILED
+    state.error = action.error as string
+    state.user = null
+})
   },
 });
 

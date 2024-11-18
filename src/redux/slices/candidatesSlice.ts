@@ -5,6 +5,8 @@ import {
 } from "@reduxjs/toolkit";
 import { DataStatus, CandidateState } from "../../types/redux";
 import { ICandidate } from "../../types/candidates";
+import { useAppDispatch } from "../store";
+import { fetchGetUser } from "./userSlice";
 
 const initialState: CandidateState = {
   error: null,
@@ -12,16 +14,41 @@ const initialState: CandidateState = {
   candidates: [],
 };
 
-const fetchCandidates = createAsyncThunk(
+export const fetchCandidates = createAsyncThunk(
   "candidates/getList",
   async (_, thunkApi) => {
     try {
-      const res = await fetch("http://localhost:2222/api/cadidates/");
+      const res = await fetch("http://localhost:2222/api/candidates/",{
+        method:"GET",
+        
+        headers:{"authorization":localStorage.token}
+      });
       if (res.status != 200) {
         thunkApi.rejectWithValue("Cant get the list ,please try again");
       }
       const data = await res.json();
-      thunkApi.fulfillWithValue(data);
+      console.log(data);
+      return data
+    } catch (err) {
+      thunkApi.rejectWithValue(`Cant get the list ,please try again${err}`);
+    }
+  }
+);
+
+
+
+export const fetchVote = createAsyncThunk(
+  "candidates/vote",
+  async (candidateId:string , thunkApi) => {
+    try {
+      const res = await fetch(`http://localhost:2222/api/votes/${candidateId}`,{
+        method:"PUT",
+        headers:{"authorization":localStorage.token}
+      });
+      if (res.status != 201) {
+        thunkApi.rejectWithValue("Cant vote ,please try again");
+      }
+      
     } catch (err) {
       thunkApi.rejectWithValue(`Cant get the list ,please try again${err}`);
     }
